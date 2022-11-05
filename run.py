@@ -9,20 +9,13 @@ import requests
 import json
 import numpy as np
 
-out = requests.get(url = "https://www.ishares.com/it/investitori-professionali/it/product-screener/product-screener-v3.jsn?dcrPath=/templatedata/config/product-screener-v3/data/it/it/product-screener/product-screener&siteEntryPassthrough=true")
-print(out.status_code)
-print(out.json())
-print(json.dumps(out.json(), indent=4, sort_keys=True))
-out.content
-json_raw = out.json()
-columns_dict = json_raw['data']['tableData']['columns']
-columns_list = [x['name'] for x in json_raw['data']['tableData']['columns']]
-data_list = json_raw['data']['tableData']['data']
-data_list_2 = [None] * len(data_list)
-for i in range(len(data_list)):
-    data_list_2[i] = [x['r'] if type(x) is dict else x for x in data_list[i]]
-
-df = pd.DataFrame(data=data_list_2, columns=columns_list)
-df = df.replace('-', np.NaN)
-data_list_2 = [x['r'] if type(x) is dict else x for x in data_list]
-df = pd.DataFrame(data_list)
+import requests
+import pandas as pd
+import funcs
+api_url = "https://www.ishares.com/it/investitori-professionali/it/product-screener/product-screener-v3.1.jsn?dcrPath=/templatedata/config/product-screener-v3/data/it/it/product-screener/ishares-product-screener-backend-config&siteEntryPassthrough=true"
+response = requests.get(api_url)
+resp_dict = response.json()
+# df = pd.DataFrame(response.json()).T
+# df.columns
+for key in resp_dict:
+    funcs.parse_etf(resp_dict[key])
